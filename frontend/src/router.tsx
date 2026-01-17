@@ -23,12 +23,19 @@ export const router = createBrowserRouter([
     element: <Shell />,
     children: [
       { path: "/", element: <LandingPage /> },
+
       { path: "/gallery", element: <GalleryPage /> },
       { path: "/gallery/:id", element: <ArtDetailPage /> },
 
+      // Existing pro routes
       { path: "/pro", element: <ProHomePage /> },
       { path: "/pro/writing", element: <WritingLibraryPage /> },
       { path: "/pro/writing/:id", element: <WritingDetailPage /> },
+
+      // ✅ Alias routes so nav or landing links to /professional won’t 404
+      { path: "/professional", element: <ProHomePage /> },
+      { path: "/professional/writing", element: <WritingLibraryPage /> },
+      { path: "/professional/writing/:id", element: <WritingDetailPage /> },
 
       { path: "/media", element: <MediaPage /> },
       { path: "/contact", element: <ContactPage /> },

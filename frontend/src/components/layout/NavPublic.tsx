@@ -27,7 +27,9 @@ export default function NavPublic() {
           <NavLink to="/contact" className={linkCls}>
             Contact
           </NavLink>
-          <NavLink to="/pro" className={linkCls}>
+
+          {/* ✅ Use /professional (router alias exists; Shell treats it as pro now) */}
+          <NavLink to="/professional" className={linkCls}>
             Professional
           </NavLink>
         </nav>

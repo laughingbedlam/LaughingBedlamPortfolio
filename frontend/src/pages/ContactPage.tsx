@@ -1,90 +1,116 @@
 /**
  * ContactPage.tsx
- * Public contact form to reach the artist (stored server-side).
+ * Simple contact page: big email + QR codes for Instagram + Discord.
+ * No backend required.
  */
 import React from "react";
 import Card from "../components/ui/Card";
-import Input from "../components/ui/Input";
-import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
-import { http } from "../api/http";
-import { ContactPayload } from "../api/types";
+
+function QrBox({
+  label,
+  href,
+  qrSrc
+}: {
+  label: string;
+  href: string;
+  qrSrc: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="group block"
+      aria-label={label}
+    >
+      <Card className="h-full space-y-3 bg-white/[0.03] p-5 transition hover:bg-white/[0.06]">
+        <div className="text-xs uppercase tracking-widest text-white/60">{label}</div>
+
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-4">
+          <img
+            src={qrSrc}
+            alt={`${label} QR`}
+            className="mx-auto block w-[220px] max-w-full select-none"
+            loading="lazy"
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-white/80 truncate">{href}</div>
+          <div className="text-xs text-white/50 group-hover:text-white/70">Open →</div>
+        </div>
+      </Card>
+    </a>
+  );
+}
 
 export default function ContactPage() {
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [phone, setPhone] = React.useState("");
-  const [message, setMessage] = React.useState("");
-  const [busy, setBusy] = React.useState(false);
-  const [status, setStatus] = React.useState<string | null>(null);
+  // ✅ Edit these 3 values
+  const email = "DimitriDHoffman@protonmail.ch";
+  const instagramUrl = "https://instagram.com/YOUR_HANDLE";
+  const discordInviteUrl = "https://discord.gg/YOUR_INVITE";
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus(null);
-    if (!name.trim() || !message.trim()) {
-      setStatus("Name and message are required.");
-      return;
-    }
+  // ✅ Put your generated QR pngs in /public/qr/
+  const instagramQr = "/qr/instagram.png";
+  const discordQr = "/qr/discord.png";
 
-    const payload: ContactPayload = { name, email, phone, message };
+  const subject = encodeURIComponent("Work inquiry");
+  const body = encodeURIComponent(
+    "Hey — I found your portfolio and wanted to reach out about..."
+  );
+  const mailto = `mailto:${email}?subject=${subject}&body=${body}`;
 
+  async function copyEmail() {
     try {
-      setBusy(true);
-      await http.post<{ ok: boolean }>("/api/contact", payload);
-      setName("");
-      setEmail("");
-      setPhone("");
-      setMessage("");
-      setStatus("Sent. Thank you.");
-    } catch (e: any) {
-      setStatus(e?.message || "Failed to send.");
-    } finally {
-      setBusy(false);
+      await navigator.clipboard.writeText(email);
+      alert("Email copied.");
+    } catch {
+      alert("Couldn’t copy. You can manually copy it.");
     }
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Contact</h1>
-        <p className="mt-1 text-sm text-white/65">Leave an email or number + a message.</p>
+      <div className="flex flex-col gap-2">
+        <div className="text-xs uppercase tracking-widest text-white/60">Contact</div>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">
+          Contact the Artist
+        </h1>
       </div>
 
-      <Card className="max-w-2xl space-y-4">
-        <form onSubmit={submit} className="grid gap-3">
-          <label className="text-xs text-white/70">
-            Name *
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-          </label>
+      {/* Big email card */}
+      <Card className="bg-white/[0.03] p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-widest text-white/60">Email</div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="text-xs text-white/70">
-              Email
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" />
-            </label>
-            <label className="text-xs text-white/70">
-              Phone
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(optional)" />
-            </label>
+            <a
+              href={mailto}
+              className="block text-2xl font-semibold text-white underline decoration-white/20 underline-offset-8 hover:decoration-white/60"
+            >
+              {email}
+            </a>
+
           </div>
 
-          <label className="text-xs text-white/70">
-            Message *
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Write your message..."
-              rows={6}
-            />
-          </label>
-
-          {status && <div className="text-sm text-white/80">{status}</div>}
-
-          <Button type="submit" disabled={busy}>
-            {busy ? "Sending..." : "Send"}
-          </Button>
-        </form>
+          <div className="flex gap-2">
+            <Button onClick={copyEmail} variant="ghost">
+              Copy
+            </Button>
+            <a href={mailto}>
+              <Button>Compose</Button>
+            </a>
+          </div>
+        </div>
       </Card>
+
+      {/* QR section */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <QrBox label="Instagram" href={instagramUrl} qrSrc={instagramQr} />
+        <QrBox label="Discord" href={discordInviteUrl} qrSrc={discordQr} />
+      </div>
+
     </div>
   );
 }

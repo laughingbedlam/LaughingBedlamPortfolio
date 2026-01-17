@@ -1,6 +1,7 @@
 /**
  * Shell.tsx
  * Global layout wrapper with route outlet + footer.
+ * Fix: treat /professional routes as "pro" so they use pro nav + pro background.
  */
 import { Outlet, useLocation } from "react-router-dom";
 import NavPublic from "./NavPublic";
@@ -9,7 +10,11 @@ import Footer from "./Footer";
 
 export function Shell() {
   const location = useLocation();
-  const isPro = location.pathname.startsWith("/pro");
+
+  // ✅ Pro routes include both /pro/* and /professional/*
+  const isPro =
+    location.pathname.startsWith("/pro") || location.pathname.startsWith("/professional");
+
   const isAdmin = location.pathname.startsWith("/admin");
 
   return (

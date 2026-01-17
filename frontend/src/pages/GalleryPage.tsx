@@ -38,7 +38,6 @@ export default function GalleryPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">Gallery</h1>
-          <p className="mt-1 text-sm text-white/65">A living archive. Click any piece to expand it.</p>
         </div>
 
         <div className="flex w-full max-w-md gap-2">

@@ -1,41 +1,82 @@
-/* grunge.css
-   Grunge overlays + textures + subtle distortion vibes. */
+/* ===== Landing layout (Popular Front-ish: editorial, minimal, gritty) ===== */
 
-   .grunge-bg {
-    position: relative;
-    background: radial-gradient(1200px 600px at 20% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
-      radial-gradient(900px 500px at 90% 10%, rgba(255, 255, 255, 0.06), transparent 60%),
-      linear-gradient(180deg, #07070a, #0a0a0c 35%, #060608);
-    overflow: hidden;
+.landing-hero {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1.35fr 0.65fr;
+}
+@media (max-width: 900px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
   }
-  
-  .grunge-bg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("/src/assets/noise.png");
-    opacity: 0.08;
-    mix-blend-mode: overlay;
-    pointer-events: none;
-  }
-  
-  .grunge-bg::after {
-    content: "";
-    position: absolute;
-    inset: -40px;
-    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.06), transparent 40%),
-      radial-gradient(circle at 15% 80%, rgba(255, 255, 255, 0.05), transparent 35%);
-    filter: blur(14px);
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  
-  .grunge-border {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8) inset;
-  }
-  
-  .text-glitch {
-    text-shadow: 0.06em 0 rgba(255, 0, 140, 0.18), -0.06em 0 rgba(0, 220, 255, 0.16);
-  }
-  
+}
+
+.landing-hero__accent {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.landing-hero__panel {
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.35);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.landing-chip {
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+  background: rgba(0,0,0,0.25);
+}
+
+/* ===== Brand statement block ===== */
+.landing-message {
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.35);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* ===== Marquee banner ===== */
+.marquee-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.70);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 18s) linear infinite;
+}
+
+.marquee-text {
+  white-space: nowrap;
+  padding: 10px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+/* Landing hero: single column (no right bubble panel) */
+.landing-hero--single {
+  grid-template-columns: 1fr !important;
+}
+

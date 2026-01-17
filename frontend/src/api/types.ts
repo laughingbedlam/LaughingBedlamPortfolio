@@ -15,6 +15,10 @@ export type Item = {
   fileUrl: string; // served by backend
   mimeType: string;
   createdAt: string;
+
+  // ✅ Per-item (writing PDF) background options (optional)
+  backgroundImageUrl?: string; // e.g. "/uploads/....png"
+  backgroundColor?: string;    // e.g. "#07070a"
 };
 
 export type LoginResponse = { token: string };
