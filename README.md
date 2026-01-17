@@ -1,8 +1,8 @@
-# Portfolio Library (Grunge Gallery + Professional Writing Library)
+# Portfolio Library (Art Gallery + Professional Writing Library)
 
 This repo contains:
 - `backend/` Node/Express API + SQLite + JWT auth + file uploads (multer)
-- `frontend/` React (Vite + TypeScript) + Tailwind + grunge styling
+- `frontend/` React (Vite + TypeScript) + Tailwind + artistic styling
 
 ## Quick Start (Local)
 
