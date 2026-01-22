@@ -21,12 +21,28 @@ const app = express();
 app.use(express.json({ limit: "10mb" }));
 
 // Dev-friendly CORS (you can tighten later)
+// CORS (prod + local)
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+  .split(",")
+  .map(s => s.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
-    credentials: true
+    origin: (origin, cb) => {
+      // allow non-browser requests (curl/postman) with no Origin header
+      if (!origin) return cb(null, true);
+
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+
+      return cb(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
   })
 );
+
+app.options("*", cors());
+
 
 // ---- Serve uploads as static files ----
 const uploadsDir = path.join(__dirname, "..", "uploads");
