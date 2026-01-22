@@ -56,21 +56,22 @@ router.get("/items", (req, res) => {
 
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
-  db.all(`SELECT * FROM items ${whereSql} ORDER BY datetime(created_at) DESC`, params, (err, rows) => {
-    if (err) return res.status(500).json({ error: "DB error." });
-    res.json((rows || []).map(rowToItem));
-  });
+db.all(`SELECT * FROM items ${whereSql} ORDER BY datetime(created_at) DESC`, params, (err, rows) => {
+  if (err) {
+    console.error("DB ERROR /api/items:", err);   // <-- added to log on render
+    return res.status(500).json({ error: "DB error." });
+  }
+  res.json((rows || []).map(rowToItem));
 });
-
+  
 router.get("/items/:id", (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
 
   db.get(`SELECT * FROM items WHERE id = ?`, [id], (err, row) => {
-    if (err) return res.status(500).json({ error: "DB error." });
-    if (!row) return res.status(404).json({ error: "Not found" });
-    res.json(rowToItem(row));
-  });
+  if (err) return res.status(500).json({ error: "DB error." });
+  if (!row) return res.status(404).json({ error: "Not found" });
+  res.json(rowToItem(row));
 });
 
 module.exports = router;
