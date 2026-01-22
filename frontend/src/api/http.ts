@@ -2,8 +2,11 @@
  * http.ts
  * Fetch wrapper + auth token helpers + safe URL join for API + media URLs.
  */
-const RAW_API_BASE: string =
-  (import.meta as any).env?.VITE_API_BASE?.toString() || "http://localhost:4000";
+const RAW_API_BASE = (import.meta as any).env?.VITE_API_BASE_URL?.toString();
+
+if (!RAW_API_BASE) {
+  throw new Error("Missing VITE_API_BASE_URL environment variable");
+}
 
 // normalize base: no trailing slash
 const API_BASE = RAW_API_BASE.endsWith("/") ? RAW_API_BASE.slice(0, -1) : RAW_API_BASE;
