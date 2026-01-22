@@ -27,19 +27,23 @@ const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
   .map(s => s.trim())
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // allow non-browser requests (curl/postman) with no Origin header
-      if (!origin) return cb(null, true);
+const vercelPreviewRegex =
+  /^https:\/\/laughing-bedlam-portfolio-.*-bedlams-projects-f2ddb5e2\.vercel\.app$/;
 
-      if (allowedOrigins.includes(origin)) return cb(null, true);
+const corsOptions = {
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
 
-      return cb(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  })
-);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    if (vercelPreviewRegex.test(origin)) return cb(null, true);
+
+    return cb(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.options("*", cors({
   origin: (origin, cb) => {
