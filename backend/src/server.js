@@ -41,11 +41,19 @@ app.use(
   })
 );
 
-app.options("*", cors());
+app.options("*", cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+}));
 
 
 // ---- Serve uploads as static files ----
-const uploadsDir = path.join(__dirname, "..", "uploads");
+const uploadsDir = process.env.UPLOADS_DIR || "/opt/render/project/src/uploads";
+
 app.use(
   "/uploads",
   express.static(uploadsDir, {
