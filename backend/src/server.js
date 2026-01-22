@@ -28,7 +28,7 @@ const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
   .filter(Boolean);
 
 const vercelPreviewRegex =
-  /^https:\/\/laughing-bedlam-portfolio-.*-bedlams-projects-f2ddb5e2\.vercel\.app$/;
+  /^https:\/\/laughing-bedlam-portfolio-.*\.vercel\.app$/;
 
 const corsOptions = {
   origin: (origin, cb) => {
@@ -45,14 +45,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("*", cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    if (allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(new Error(`CORS blocked for origin: ${origin}`));
-  },
-  credentials: true,
-}));
+app.options("*", cors(corsOptions));
 
 
 // ---- Serve uploads as static files ----
