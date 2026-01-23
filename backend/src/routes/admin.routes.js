@@ -153,5 +153,43 @@ router.post(
     }
   }
 );
+// DELETE /api/admin/items/:id
+router.delete("/items/:id", requireAuth, (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
+
+  db.get(
+    `SELECT file_name, background_name FROM items WHERE id = ?`,
+    [id],
+    (err, row) => {
+      if (err) {
+        console.error("DB delete lookup error:", err);
+        return res.status(500).json({ error: "DB error." });
+      }
+      if (!row) return res.status(404).json({ error: "Not found" });
+
+      db.run(`DELETE FROM items WHERE id = ?`, [id], function (err2) {
+        if (err2) {
+          console.error("DB delete error:", err2);
+          return res.status(500).json({ error: "DB error." });
+        }
+
+        // Best-effort file cleanup (don’t fail delete if unlink fails)
+        const uploadsDir = process.env.UPLOADS_DIR || "/opt/render/project/src/uploads";
+
+        const mainPath = row.file_name ? path.join(uploadsDir, row.file_name) : null;
+        const bgPath = row.background_name ? path.join(uploadsDir, row.background_name) : null;
+
+        for (const p of [mainPath, bgPath]) {
+          if (!p) continue;
+          fs.unlink(p, () => {}); // ignore errors
+        }
+
+        return res.json({ ok: true });
+      });
+    }
+  );
+});
+
 
 module.exports = router;
