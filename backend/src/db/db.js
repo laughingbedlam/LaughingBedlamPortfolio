@@ -20,20 +20,27 @@ const db = new sqlite3.Database(dbPath, (err) => {
 db.serialize(() => {
   // Items table (you already need this)
   db.exec(`
-    CREATE TABLE IF NOT EXISTS items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      kind TEXT NOT NULL,
-      media_type TEXT,
-      title TEXT NOT NULL,
-      description TEXT,
-      tags TEXT DEFAULT '[]',
-      file_name TEXT,
-      mime_type TEXT,
-      created_at TEXT DEFAULT (datetime('now')),
-      background_color TEXT,
-      background_name TEXT
-    );
-  `);
+  CREATE TABLE IF NOT EXISTS items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind TEXT NOT NULL,
+    media_type TEXT,
+    title TEXT NOT NULL,
+    description TEXT,
+    tags TEXT DEFAULT '[]',
+
+    file_path TEXT,
+    file_name TEXT,
+    mime_type TEXT,
+
+    created_at TEXT DEFAULT (datetime('now')),
+
+    background_color TEXT,
+    background_path TEXT,
+    background_name TEXT,
+    background_mime_type TEXT
+  );
+`);
+
 
   // Admin users table (required by auth.routes.js)
   db.exec(`
