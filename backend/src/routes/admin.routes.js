@@ -22,7 +22,9 @@ const requireAuth = requireAuthModule.requireAuth || requireAuthModule;
 const router = express.Router();
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "..", "..", "uploads");
+const uploadsDir =
+  process.env.UPLOADS_DIR || path.join(__dirname, "..", "..", "uploads");
+
 fs.mkdirSync(uploadsDir, { recursive: true });
 
 function sanitizeBaseName(name) {
