@@ -2,7 +2,10 @@
  * http.ts
  * Fetch wrapper + auth token helpers + safe URL join for API + media URLs.
  */
-const RAW_API_BASE = (import.meta as any).env?.VITE_API_BASE_URL?.toString();
+const RAW_API_BASE: string =
+  (import.meta as any).env?.VITE_API_BASE_URL?.toString() ||
+  (import.meta as any).env?.VITE_API_BASE?.toString() ||
+  "http://localhost:4000";
 
 if (!RAW_API_BASE) {
   throw new Error("Missing VITE_API_BASE_URL environment variable");
