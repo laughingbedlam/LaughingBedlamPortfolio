@@ -17,10 +17,6 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
-// If you ever deploy, you can also make this come from env
-// but for local dev this is fine as fallback.
-const BACKEND_ORIGIN_FALLBACK = "http://localhost:4000";
-
 /**
  * Converts item.fileUrl into a usable absolute URL.
  * Handles:
@@ -33,34 +29,25 @@ function resolveMediaUrl(fileUrl: string | undefined | null): string {
   const raw = String(fileUrl || "").trim();
   if (!raw) return "";
 
-  // Already absolute (http/https)
+  // If something stored localhost in dev, rewrite it to current API base
+  if (raw.startsWith("http://localhost:4000/")) {
+    return toApiUrl(raw.replace("http://localhost:4000", ""));
+  }
+
+  // Already absolute (non-localhost)
   if (/^https?:\/\//i.test(raw)) return raw;
 
   // Protocol-relative
   if (/^\/\//.test(raw)) return `https:${raw}`;
 
-  // If it's an /api/... path, use your helper (it knows backend base)
-  if (raw.startsWith("/api/")) return toApiUrl(raw);
+  // Normalize uploads paths into a relative path, then join via toApiUrl
+  if (raw.startsWith("/uploads/")) return toApiUrl(raw);
+  if (raw.startsWith("uploads/")) return toApiUrl(`/${raw}`);
 
-  // If it already looks like /uploads/..., prefix backend origin directly
-  if (raw.startsWith("/uploads/")) return `${BACKEND_ORIGIN_FALLBACK}${raw}`;
-
-  // If it looks like uploads/..., normalize to /uploads/...
-  if (raw.startsWith("uploads/")) return `${BACKEND_ORIGIN_FALLBACK}/${raw}`;
-
-  // Otherwise assume it's a relative path your API expects (e.g. "/uploads/...")
-  // toApiUrl usually prefixes backend, but we guard against bad inputs.
-  const maybe = toApiUrl(raw);
-
-  // Safety: if toApiUrl accidentally returns something like "http://...http://..."
-  // fall back to backend + raw.
-  if (/^https?:\/\/.+https?:\/\//i.test(maybe)) {
-    const normalized = raw.startsWith("/") ? raw : `/${raw}`;
-    return `${BACKEND_ORIGIN_FALLBACK}${normalized}`;
-  }
-
-  return maybe;
+  // API path or other relative
+  return toApiUrl(raw.startsWith("/") ? raw : `/${raw}`);
 }
+
 
 export default function MediaRenderer({ item }: { item: Item }) {
   const src = resolveMediaUrl(item.fileUrl);
